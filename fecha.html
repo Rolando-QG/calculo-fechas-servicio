@@ -1,0 +1,140 @@
+<html>
+<style type="text/css">
+body {
+    background-image: url(fondo.gif);
+}
+</style>
+<!--<LINK REL="Shortcut Icon" HREF="csjp.ico"> -->
+<head>
+<title>Calculo de Fechas</title>
+</head>
+
+<body>
+<h1>Calculo de Fechas por Años, Meses y Dias</h1>
+<p>Escriba la Fecha de Inicio y Termino</p>
+
+<form name="theform"  method="post">
+    Inicio:  <input name="fecha1" type="text" size="10">
+    Termino: <input name="fecha2" type="text" size="10">
+
+<input name="addname" type="button" value="Calcular" onclick="SortNames();"><br>
+
+
+<h2>Fechas</h2>
+
+<textarea name="sorted" rows="10" cols="30">Las fechas aparecerán aquí.</textarea>
+<textarea name="totales" rows="10" cols="30">Los totales apareceran aquí.</textarea>
+</br>
+<textarea name="resumen" rows="2" cols="40">Los totales apareceran aquí.</textarea>
+</br>
+<input name="addname" type="submit" value="Nuevo"><br>
+
+</form>
+</body>
+
+<script type="text/javascript">
+var numnames=0;
+var names = new Array();
+var names1 = new Array();
+var xano=0;
+var xmes=0;
+var xdia=0;
+function SortNames() {
+    //Obtiene el nombre del campo de texto
+    xfecha1=document.theform.fecha1.value;
+    xfecha2=document.theform.fecha2.value;
+    //añade el nombre a la matriz
+    xfecha1=convertDateFormat(xfecha1);
+    xfecha2=convertDateFormat(xfecha2);
+    xdias = diferenciafechas(xfecha1,xfecha2);
+    xfecha1=convertDateFormat(xfecha1);
+    xfecha2=convertDateFormat(xfecha2);
+    names[numnames]=xfecha1+' - '+xfecha2;
+    names1[numnames]=xdias;
+    totales = xano+' Años / '+xmes+' Meses / '+xdia+' Dias';
+    //incrementa el contador
+    numnames++;
+    //ordena la matriz
+    //names.sort();
+    document.theform.sorted.value=names.join("\n");
+    document.theform.totales.value=names1.join("\n");
+    document.theform.resumen.value=totales;
+}
+
+function diferenciafechas(fa,fb){  //fa y fb dos fechas
+
+var totdias = fa-fb;
+    totdias /=3600000;
+    totdias /=24;
+    totdias= Math.floor(totdias);
+    totdias= Math.abs(totdias);
+
+    var ans, meses, dias, m2, m1, d3, d2, d1 , x , xabc;
+    //var f2=new Date();	var f1=new Date();
+
+    if (fa > fb){
+        //f2=fa;
+        var f2=new Date(fa);
+        var f1=new Date(fb);
+        //f1=fb;
+    }else{
+        //f2=fb;
+        var f2=new Date(fb);
+        var f1=new Date(fa);
+        //f1=fa;
+    };  //Siempre f2 > f1
+    ans=f2.getFullYear()-f1.getFullYear(); // dif de años inicial
+    m2=f2.getMonth();
+    m1=f1.getMonth();
+    meses=m2-m1;	if (meses<0){meses +=12; --ans; }
+
+    d2=f2.getDate();
+    d1=f1.getDate();
+    dias=d2-d1;
+
+    var f3=new Date(f2.getFullYear(),m2,1);
+    f3.setDate(f3.getDate()-1);
+    d3=f3.getDate();
+
+    if (d1>d2) {
+        dias +=d3; --meses; if (meses<0){meses +=12; --ans; }
+        if (fa>fb){  //corrección por febrero y meses de 30 días
+            f3=new Date(f1.getFullYear(),m1+1,1);
+            f3.setDate(f3.getDate()-1);
+            d3=f3.getDate();
+            if (d3==30) dias -=1;
+            if (d3==29) dias -=2;
+            if (d3==28) dias -=3;
+        }
+    }
+    dias = dias+1;
+    if (dias==31){
+        meses=meses+1;
+        dias=0;
+    }
+    if (meses==12){
+        ans=ans+1;
+        meses=0;
+    }
+
+    xano = xano + ans;
+    xmes = xmes + meses;
+    xdia = xdia + dias;
+    if (xdia>=30){
+        xmes=xmes+1;
+        xdia=xdia-30;
+    }
+    if (xmes>=12){
+        xano=xano+1;
+        xmes=xmes-12;
+    }
+    xtot = ans+' Años / '+meses+' Meses / '+dias+' Dias';
+    return (xtot);
+    //return {ans:ans,meses:meses,dias:dias,Tdias:totdias};
+}
+function convertDateFormat(string) {
+    var info = string.split('/');
+    return info[2] + '/' + info[1] + '/' + info[0];
+}
+</script>
+</html>
